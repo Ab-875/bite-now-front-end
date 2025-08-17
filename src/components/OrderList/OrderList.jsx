@@ -14,6 +14,10 @@ const OrderList = () => {
         setOrder(response.data)
     }
 
+    useEffect(() => {
+        getAllOrders()
+    }, [])
+
     return (
         <>
 
