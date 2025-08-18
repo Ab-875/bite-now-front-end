@@ -30,7 +30,7 @@ useEffect(() => {getAllMenuItems();},
                 <p>{menuItem.description}</p>
               </li>
             ))
-          : <ClipLoader color='' />}
+          :<h1>ENTER</h1>
       </ul>
     </div>
   );
