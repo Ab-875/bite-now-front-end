@@ -12,6 +12,8 @@ const Cart = ({ cartItems, setCartItems }) => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/order`
 
         await axios.post(url), order, {headers: { Authorization: `Bearer ${token}`}}
+
+        setCartItems([])
     }
 
     
