@@ -17,3 +17,24 @@ const response = await axios.get(url);
 useEffect(() => {getAllMenuItems();},
 
  []);
+
+
+   return (
+    <div>
+      <h2>Menu Items</h2>
+      <ul>
+        {menuItems.length
+          ? menuItems.map((menuItem) => (
+              <li key={menuItem._id}>
+                <p>{menuItem.item} ${menuItem.price}</p>
+                <p>{menuItem.description}</p>
+              </li>
+            ))
+          : <ClipLoader color='' />}
+      </ul>
+    </div>
+  );
+};
+
+export default MenuList;
+
