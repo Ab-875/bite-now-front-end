@@ -13,6 +13,11 @@ const App = () => {
     setToken(newToken)
   }
 
+  if(token){
+    const decodedToken = jwtDecode(token)
+    console.log(decodedToken)
+  }
+
   return (
     <>
 
