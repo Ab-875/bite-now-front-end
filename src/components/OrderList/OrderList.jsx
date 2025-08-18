@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 
 const OrderList = () => {
 
-    const [orders, setOrder] = useState()
+    const [orders, setOrder] = useState([])
 
     const getAllOrders = async () => {
         console.log(import.meta.env.VITE_BACKEND_URL)
