@@ -5,16 +5,16 @@ import OrderItem from "../OrderItem/OrderItem"
 
 const OrderList = () => {
 
-    const [orders, setOrder] = useState([])
+    const [orders, setOrders] = useState([])
 
     const getAllOrders = async () => {
         console.log(import.meta.env.VITE_BACKEND_URL)
         const url = `${import.meta.env.VITE_BACKEND_URL}/order`
         const response = await axios.get(url, {
-            headers: { Auhtorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` }
         })
         console.log(response)
-        setOrder(response.data)
+        setOrders(response.data)
     }
 
     useEffect(() => {
