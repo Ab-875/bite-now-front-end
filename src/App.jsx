@@ -6,6 +6,8 @@ import LoginForm from "./components/Login/LoginForm"
 import SignUp from "./components/Signup/SignupForm"
 import LogoutButton from "./components/Login/LogoutButton"
 
+import OrderList from "./components/OrderList/OrderList"
+
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token'))
 
@@ -20,7 +22,16 @@ const App = () => {
 
   return (
     <>
-
+      <Router>
+        <div>
+        {token ? <LogoutButton onLogout={handleLogut} /> : null}
+        <Routes>
+          <Route path="/order" element={<OrderList />}/>
+          <Route path="/login" element={<LoginForm onLogin={handleLogin} />}/>
+          <Route path="/signup" element={<SignUp />} />
+        </Routes>
+        </div>
+      </Router>
     </>
   )
 }
