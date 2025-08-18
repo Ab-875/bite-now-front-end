@@ -1,16 +1,21 @@
 import { useState } from 'react';
 
+
 const App = () => {
   const [title, setTitle] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [item, setitem] = useState('');
+  const [price, setprice] = useState('');
+  const [description, setdescription] = useState('');
 
-  const handleFirstNameChange = (event) => {
-    setFirstName(event.target.value);
+  const handleitemChange = (event) => {
+    setitem(event.target.value);
   };
 
-  const handleLastNameChange = (event) => {
-    setLastName(event.target.value);
+  const handlepriceChange = (event) => {
+    setprice(event.target.value);
+  };
+  const handledescriptionChange = (event) => {
+    setdescription(event.target.value);
   };
 
   return (
@@ -27,6 +32,11 @@ const App = () => {
           id="price"
           value={price}
           onChange={handlepriceChange}
+        />
+        <input
+          id="description"
+          value={description}
+          onChange={handledescriptionChange}
         />
 
       </form>
