@@ -1,50 +1,65 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-const MenuList = ({ token, onOrderCreated }) => {
-    const [menus, setMenus] = useState([])
-    const [quantityById, setQuantityById] = useState({})
+const OrderList = ({ token }) => {
+    const [orders, setOrders] = useState([])
+    const [loading, setLoading] = useState(true)
+    const BASE = import.meta.env.VITE_BACKEND_URL
+
+    const fetchOrders = async () => {
+        setLoading(true)
+        try {
+            const res = await axios.get(`${BASE}/order`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            const data = Array.isArray(res.data) ? res.data : []
+            setOrders(data)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/menu`)
-            .then(res => setMenus(res.data))
-            .catch(console.error)
+        fetchOrders()
     }, [])
 
-    const addToOrders = async (menu) => {
-        const qty = Math.max(1, Number(quantityById[menu._id] ?? 1))
-        const payload = {
-            items: [{ menuItem: menu._id, quantity: qty }],
-            price: menu.price * qty
-        }
-        const res = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/order`,
-            payload,
-            { headers: { Authorization: `Bearer ${token}` } }
-        )
-        if (onOrderCreated) onOrderCreated(res.data)
+    const deleteOrder = async (id) => {
+        await axios.delete(`${BASE}/order/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        setOrders((prev) => prev.filter((order) => order._id !== id))
     }
 
     return (
         <div>
-            <h2>Menu</h2>
-            <ul>
-                {menus.map((menu) => (
-                    <li key={menu._id}>
-                        <div>{menu.item} - {menu.price}</div>
-                        <div>{menu.description}</div>
-                        <input
-                            type="number"
-                            min={1}
-                            value={quantityById[menu._id] ?? 1}
-                            onChange={(e) => setQuantityById(s => ({ ...s, [menu._id]: e.target.value }))}
-                        />
-                        <button onClick={() => addToOrders(menu)}>Add to Orders</button>
-                    </li>
-                ))}
-            </ul>
+            <h2>My Orders</h2>
+            {loading ? (
+                <p>Loading…</p>
+            ) : orders.length > 0 ? (
+                <ul>
+                    {orders.map((order) => (
+                        <li key={order._id}>
+                            <div>
+                                Order #{order._id} — {order.status} — Total: {order.price}
+                            </div>
+                            <ul>
+                                {(order.items || []).map((item, i) => (
+                                    <li key={item._id || i}>
+                                        {(item.menuItem && item.menuItem.item) || "Item"} x{" "}
+                                        {item.quantity || 1}
+                                        {item.notes ? ` - ${item.notes}` : ""}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => deleteOrder(order._id)}>Delete</button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No orders yet.</p>
+            )}
         </div>
     )
 }
 
-export default MenuList
+export default OrderList

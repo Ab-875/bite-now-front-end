@@ -1,74 +1,62 @@
-import { useState } from 'react';
+import { useState } from "react"
+import axios from "axios"
 
-const MenuForm = () => {
-  const [item, setItem] = useState('');
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
+const MenuForm = ({ token, onCreated }) => {
+  const [formData, setFormData] = useState({
+    item: "",
+    price: "",
+    description: ""
+  })
 
-  const handleItemChange = (event) => {
-    setItem(event.target.value);
-  };
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData({ ...formData, [name]: value })
+  }
 
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const newMenuItem = { item, price, description };
-    console.log(newMenuItem);
-    setItem('');
-    setPrice('');
-    setDescription('');
-  };
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/menu`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setFormData({ item: "", price: "", description: "" })
+      if (onCreated) onCreated(response.data)
+    } catch (err) {
+      console.error("Error creating menu:", err)
+    }
+  }
 
   return (
-    <div>
-    <h2>Add New Menu Item</h2>
+    <form onSubmit={handleSubmit}>
+      <h2>Add Menu Item</h2>
+      <input
+        type="text"
+        name="item"
+        placeholder="Item name"
+        value={formData.item}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="number"
+        name="price"
+        placeholder="Price"
+        value={formData.price}
+        onChange={handleChange}
+        required
+      />
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={formData.description}
+        onChange={handleChange}
+        required
+      />
+      <button type="submit">Add</button>
+    </form>
+  )
+}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="item">Item Name: </label>
-          <input
-            id="item"
-            value={item}
-            onChange={
-                handleItemChange
-            }
-            placeholder="Enter menu item name"
-          />
-        </div>
-
-
-    <div>
-          <label htmlFor="price">Price: </label>
-          <input
-            id="price"
-            type="number"
-            value={price}
-            onChange={handlePriceChange}
-            placeholder="Enter price"
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description: </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={handleDescriptionChange}
-            placeholder="Enter description"
-          />
-        </div>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
-export default MenuForm;
+export default MenuForm

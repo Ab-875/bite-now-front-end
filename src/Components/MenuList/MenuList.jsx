@@ -1,36 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
-const MenuList = () => {
-  const [menuItems, setMenuItems] = useState([]);
-
-  const getAllMenuItems = async () => {
-    try {
-      const url = `${import.meta.env.VITE_BACK_END_SERVER_URL}/menu`;
-      const response = await axios.get(url);
-
-      // Ensure it's an array
-      const data = Array.isArray(response.data) ? response.data : [];
-      setMenuItems(data);
-    } catch (err) {
-      console.error("Error fetching menu:", err);
-      setMenuItems([]); // fallback to empty array
-    }
-  };
+const MenuList = ({ token }) => {
+  const [menus, setMenus] = useState([])
+  const [quantityById, setQuantityById] = useState({})
+  const navigate = useNavigate()
+  const BASE = import.meta.env.VITE_BACKEND_URL
 
   useEffect(() => {
-    getAllMenuItems();
-  }, []);
+    axios
+      .get(`${BASE}/menu`)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : []
+        setMenus(data)
+      })
+      .catch(() => setMenus([]))
+  }, [])
+
+  const addToOrders = async (menu) => {
+    const quantity = Math.max(1, Number(quantityById[menu._id] ?? 1))
+    const payload = {
+      items: [{ menuItem: menu._id, quantity }],
+      price: menu.price * quantity,
+    }
+    await axios.post(`${BASE}/order`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    navigate("/order")
+  }
 
   return (
     <div>
       <h2>Menu Items</h2>
       <ul>
-        {Array.isArray(menuItems) && menuItems.length > 0 ? (
-          menuItems.map((menuItem) => (
-            <li key={menuItem._id}>
-              <p>{menuItem.item} ${menuItem.price}</p>
-              <p>{menuItem.description}</p>
+        {menus.length > 0 ? (
+          menus.map((menu) => (
+            <li key={menu._id}>
+              <p>{menu.item} ${menu.price}</p>
+              <p>{menu.description}</p>
+              <input
+                type="number"
+                min={1}
+                value={quantityById[menu._id] ?? 1}
+                onChange={(event) =>
+                  setQuantityById((stack) => ({ ...stack, [menu._id]: event.target.value }))
+                }
+              />
+              <button onClick={() => addToOrders(menu)}>Add to Orders</button>
             </li>
           ))
         ) : (
@@ -38,7 +55,7 @@ const MenuList = () => {
         )}
       </ul>
     </div>
-  );
-};
+  )
+}
 
-export default MenuList;
+export default MenuList
