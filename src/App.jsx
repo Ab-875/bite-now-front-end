@@ -24,13 +24,16 @@ const App = () => {
     setCartItems([])
   }
 
-  if (token) {
-    const decodedToken = jwtDecode(token)
-    setUser(decodedToken)
-    console.log(decodedToken)
-  } else {
-    setUser(null)
-  }
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token)
+      setUser(decodedToken)
+      console.log(decodedToken)
+    } else {
+      setUser(null)
+    }
+  }, [])
+
 
   if (!token) {
     return (
@@ -63,13 +66,13 @@ const App = () => {
         }
 
         {user?.role === "owner"
-        ?
-        <Routes>
-          <Route path="/orders" element={<OrderList token={token} />}/>
-          <Route path="*" element={<Navigate to="/order" />} />
-        </Routes>
-        :
-        null
+          ?
+          <Routes>
+            <Route path="/orders" element={<OrderList token={token} />} />
+            <Route path="*" element={<Navigate to="/order" />} />
+          </Routes>
+          :
+          null
         }
       </Router>
     </>
