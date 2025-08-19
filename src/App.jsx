@@ -5,6 +5,7 @@ import MenuList from "./components/MenuList/MenuList"
 import OrderList from "./components/OrderList/OrderList"
 import LoginForm from "./components/Login/LoginForm"
 import SignUp from "./components/Signup/SignupForm"
+import Navbar from "./Components/NavBar/NavBar"
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"))
@@ -41,6 +42,7 @@ const App = () => {
   return (
     <Router>
       <button onClick={handleLogout}>Logout</button>
+      <Navbar />
       <Routes>
         <Route path="/menu" element={<MenuList token={token} />} />
         <Route path="/order" element={<OrderList token={token} />} />
