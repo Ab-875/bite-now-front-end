@@ -2,37 +2,43 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
-const MenuList = ({ token }) => {
+const MenuList = ({ token, role }) => {
   const [menus, setMenus] = useState([])
   const [quantityById, setQuantityById] = useState({})
+  const [error, setError] = useState("")
   const navigate = useNavigate()
-  const BASE = import.meta.env.VITE_BACKEND_URL
+  const url = import.meta.env.VITE_BACKEND_URL
 
   useEffect(() => {
-    axios
-      .get(`${BASE}/menu`)
-      .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : []
-        setMenus(data)
-      })
-      .catch(() => setMenus([]))
+    ; (async () => {
+      try {
+        const res = await axios.get(`${url}/menu`)
+        setMenus(Array.isArray(res.data) ? res.data : [])
+      } catch (event) {
+        setMenus([])
+      }
+    })()
   }, [])
 
   const addToOrders = async (menu) => {
-    const quantity = Math.max(1, Number(quantityById[menu._id] ?? 1))
-    const payload = {
-      items: [{ menuItem: menu._id, quantity }],
-      price: menu.price * quantity,
+    try {
+      const quantity = Math.max(1, Number(quantityById[menu._id] ?? 1))
+      const payload = { items: [{ menuItem: menu._id, quantity }] }
+      await axios.post(`${url}/order`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      navigate("/order")
+    } catch (event) {
+      setError(event.response?.data?.error || event.response?.data?.message || event.message)
+      console.error("POST /order failed:", event.response?.data || event.message)
     }
-    await axios.post(`${BASE}/order`, payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    navigate("/order")
   }
 
   return (
     <div>
       <h2>Menu Items</h2>
+      {role !== "customer" && <p>You must be logged in as a customer to place orders.</p>}
+      {error && <p>{error}</p>}
       <ul>
         {menus.length > 0 ? (
           menus.map((menu) => (
@@ -44,10 +50,15 @@ const MenuList = ({ token }) => {
                 min={1}
                 value={quantityById[menu._id] ?? 1}
                 onChange={(event) =>
-                  setQuantityById((stack) => ({ ...stack, [menu._id]: event.target.value }))
+                  setQuantityById((s) => ({ ...s, [menu._id]: event.target.value }))
                 }
               />
-              <button onClick={() => addToOrders(menu)}>Add to Orders</button>
+              <button
+                onClick={() => addToOrders(menu)}
+                disabled={role !== "customer"}
+              >
+                Add to Orders
+              </button>
             </li>
           ))
         ) : (

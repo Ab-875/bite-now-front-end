@@ -24,8 +24,13 @@ const App = () => {
   }
 
   useEffect(() => {
-    if (token) setUser(jwtDecode(token))
-    else setUser(null)
+    if (token) {
+      const decoded = jwtDecode(token)
+      console.log("logged in as:", decoded.role)
+      setUser(decoded)
+    } else {
+      setUser(null)
+    }
   }, [token])
 
   if (!token) {
@@ -45,7 +50,7 @@ const App = () => {
       <button onClick={handleLogout}>Logout</button>
       <Navbar />
       <Routes>
-        <Route path="/menu" element={<MenuList token={token} />} />
+        <Route path="/menu" element={<MenuList token={token} role={user?.role} />} />
         <Route path="/order" element={<OrderList token={token} />} />
         {user?.role === "owner" && (
           <Route path="/owner/menu" element={<MenuAdmin token={token} />} />
