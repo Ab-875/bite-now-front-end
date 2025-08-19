@@ -1,51 +1,100 @@
+import { useEffect, useState } from "react"
 import axios from "axios"
-import { useState, useEffect } from "react"
-import OrderItem from "../OrderItem/OrderItem"
 
+const STATUSES = ["pending", "preparing", "completed", "cancelled"]
 
-const OrderList = () => {
-
+const OrderList = ({ token, role }) => {
     const [orders, setOrders] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState("")
+    const url = import.meta.env.VITE_BACKEND_URL
 
-    const getAllOrders = async () => {
-        console.log(import.meta.env.VITE_BACKEND_URL)
-        const url = `${import.meta.env.VITE_BACKEND_URL}/order`
-        const response = await axios.get(url, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        console.log(response)
-        setOrders(response.data)
+    const fetchOrders = async () => {
+        setLoading(true)
+        setError("")
+        try {
+            const res = await axios.get(`${url}/order`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            const data = Array.isArray(res.data) ? res.data : []
+            setOrders(data)
+        } catch (event) {
+            setError(event.response?.data?.error || event.response?.data?.message || event.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
-        getAllOrders()
+        fetchOrders()
     }, [])
 
+    const deleteOrder = async (id) => {
+        await axios.delete(`${url}/order/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        setOrders((prev) => prev.filter((order) => order._id !== id))
+    }
+
+    const updateStatus = async (id, status) => {
+        try {
+            setOrders((prev) =>
+                prev.map((order) => (order._id === id ? { ...order, status } : order))
+            )
+            await axios.put(
+                `${url}/order/${id}`,
+                { status },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+        } catch (event) {
+            await fetchOrders()
+            setError(event.response?.data?.error || event.response?.data?.message || event.message)
+        }
+    }
+
     return (
-        <>
-            <div>
+        <div>
+            <h2>My Orders</h2>
+            {error && <p>{error}</p>}
+            {loading ? (
+                <p>Loading…</p>
+            ) : orders.length > 0 ? (
                 <ul>
-                    {
-                        orders.length
-                            ?
-                            orders.map((order) => {
-                                return (
-                                    <>
-                                        <div>
-                                            <h2>My Orders</h2>
-                                            {orders.map((order) => {
-                                                <OrderItem key={order._id} order={order} />
-                                            })}
-                                        </div>
-                                    </>
-                                )
-                            })
-                            :
-                            <p>Loading</p>
-                    }
+                    {orders.map((order) => (
+                        <li key={order._id}>
+                            <div>
+                                Order #{order._id} —{" "}
+                                {role === "owner" ? (
+                                    <select
+                                        value={order.status}
+                                        onChange={(event) => updateStatus(order._id, event.target.value)}
+                                    >
+                                        {STATUSES.map((state) => (
+                                            <option key={state} value={state}>{state}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <span>{order.status}</span>
+                                )}{" "}
+                                — Total: {order.price}
+                            </div>
+                            <ul>
+                                {(order.items || []).map((item, index) => (
+                                    <li key={item._id || index}>
+                                        {(item.menuItem && item.menuItem.item) || "Item"} x{" "}
+                                        {item.quantity || 1}
+                                        {item.notes ? ` - ${item.notes}` : ""}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={() => deleteOrder(order._id)}>Delete</button>
+                        </li>
+                    ))}
                 </ul>
-            </div>
-        </>
+            ) : (
+                <p>No orders yet.</p>
+            )}
+        </div>
     )
 }
 

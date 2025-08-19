@@ -1,81 +1,63 @@
-
-import { jwtDecode } from "jwt-decode"
-import { useEffect, useState } from "react"
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router"
+import { useEffect, useState } from "react"
+import { jwtDecode } from "jwt-decode"
+import MenuList from "./components/MenuList/MenuList"
+import OrderList from "./components/OrderList/OrderList"
 import LoginForm from "./components/Login/LoginForm"
 import SignUp from "./components/Signup/SignupForm"
-import LogoutButton from "./components/Login/LogoutButton"
-import OrderList from "./components/OrderList/OrderList"
-import Cart from "./components/Cart/Cart"
-
+import Navbar from "./Components/NavBar/NavBar"
+import MenuAdmin from "./Components/MenuForm/MenuAdmin"
 
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem('token'))
+  const [token, setToken] = useState(localStorage.getItem("token"))
   const [user, setUser] = useState(null)
-  const [cartItems, setCartItems] = useState([])
 
   function handleLogin(newToken) {
+    localStorage.setItem("token", newToken)
     setToken(newToken)
   }
 
-  const handleLogout = (token) => {
-    localStorage.setItem("token", token)
+  function handleLogout() {
+    localStorage.removeItem("token")
     setToken(null)
     setUser(null)
-    setCartItems([])
   }
 
-  if (token) {
-    const decodedToken = jwtDecode(token)
-    setUser(decodedToken)
-    console.log(decodedToken)
-  } else {
-    setUser(null)
-  }
+  useEffect(() => {
+    if (token) {
+      const decoded = jwtDecode(token)
+      console.log("logged in as:", decoded.role)
+      setUser(decoded)
+    } else {
+      setUser(null)
+    }
+  }, [token])
 
   if (!token) {
     return (
-      <>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-            <Route path="/signup" element={<SignUp />} />
-          </Routes>
-        </Router>
-      </>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
     )
   }
 
   return (
-    <>
-
-      <Router>
-        <LogoutButton onLogout={handleLogout} />
-        {user?.role === "customer"
-          ?
-          <Routes>
-            <Route path="/menu"
-              element={<MenuList token={token} />}
-              onAddToCart={(item) => { setCartItems([...cartItems, item]) }}
-            />
-            <Route path="*" element={<Navigate to="/menu" />} />
-          </Routes>
-          :
-          null
-        }
-
-        {user?.role === "owner"
-        ?
-        <Routes>
-          <Route path="/orders" element={<OrderList token={token} />}/>
-          <Route path="*" element={<Navigate to="/order" />} />
-        </Routes>
-        :
-        null
-        }
-      </Router>
-    </>
+    <Router>
+      <button onClick={handleLogout}>Logout</button>
+      <Navbar />
+      <Routes>
+        <Route path="/menu" element={<MenuList token={token} role={user?.role} />} />
+        <Route path="/order" element={<OrderList token={token} role={user?.role} />} />
+        {user?.role === "owner" && (
+          <Route path="/owner/menu" element={<MenuAdmin token={token} />} />
+        )}
+        <Route path="*" element={<Navigate to="/menu" replace />} />
+      </Routes>
+    </Router>
   )
 }
 
