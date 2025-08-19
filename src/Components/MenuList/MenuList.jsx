@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import MenuItem from "./MenuItem"
+import MenuDelete from "../MenuDelete/MenuDelete"
 
 const MenuList = ({ token, onAddToCart }) => {
   const [menu, setMenu] = useState([])
@@ -22,7 +23,7 @@ const MenuList = ({ token, onAddToCart }) => {
     <div>
       <h2>Menu</h2>
       {menu.map(item => (
-        <MenuItem key={item._id} item={item} onAddToCart={onAddToCart} />
+        <MenuItem getAllItems = {getAllMenu} key={item._id} item={item} onAddToCart={onAddToCart} />
       ))}
     </div>
   )
