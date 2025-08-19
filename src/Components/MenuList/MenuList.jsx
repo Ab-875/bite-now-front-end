@@ -1,40 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ClipLoader } from 'react-spinners';
+import { useEffect, useState } from "react"
+import axios from "axios"
+import MenuItem from "./MenuItem"
 
+const MenuList = ({ token, onAddToCart }) => {
+  const [menu, setMenu] = useState([])
 
-const MenuList = () => {
-  
-  
-    const [menuItems, setMenuItems] = useState([]);
+  const getAllMenu = async () => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/menus`
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    console.log("Fetched menu:", response.data)
+    setMenu(response.data)
+  }
 
-  const getAllMenuItems = async () => {
-    const url = `${import.meta.env.VITE_BACK_END_SERVER_URL}/menu`;
+  useEffect(() => {
+     getAllMenu()
+  }, [])
 
-const response = await axios.get(url);
-      setMenuItems(response.data);
-  };
-useEffect(() => {getAllMenuItems();},
-
- []);
-
-
-   return (
+  return (
     <div>
-      <h2>Menu Items</h2>
-      <ul>
-        {menuItems.length
-          ? menuItems.map((menuItem) => (
-              <li key={menuItem._id}>
-                <p>{menuItem.item} ${menuItem.price}</p>
-                <p>{menuItem.description}</p>
-              </li>
-            ))
-          :<h1>ENTER</h1>
-      </ul>
+      <h2>Menu</h2>
+      {menu.map(item => (
+        <MenuItem key={item._id} item={item} onAddToCart={onAddToCart} />
+      ))}
     </div>
-  );
-};
+  )
+}
 
-export default MenuList;
-
+export default MenuList
