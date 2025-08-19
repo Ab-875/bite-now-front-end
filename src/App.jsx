@@ -51,7 +51,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/menu" element={<MenuList token={token} role={user?.role} />} />
-        <Route path="/order" element={<OrderList token={token} />} />
+        <Route path="/order" element={<OrderList token={token} role={user?.role} />} />
         {user?.role === "owner" && (
           <Route path="/owner/menu" element={<MenuAdmin token={token} />} />
         )}
