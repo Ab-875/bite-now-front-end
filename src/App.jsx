@@ -6,6 +6,7 @@ import OrderList from "./components/OrderList/OrderList"
 import LoginForm from "./components/Login/LoginForm"
 import SignUp from "./components/Signup/SignupForm"
 import Navbar from "./Components/NavBar/NavBar"
+import MenuAdmin from "./Components/MenuForm/MenuAdmin"
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"))
@@ -46,6 +47,9 @@ const App = () => {
       <Routes>
         <Route path="/menu" element={<MenuList token={token} />} />
         <Route path="/order" element={<OrderList token={token} />} />
+        {user?.role === "owner" && (
+          <Route path="/owner/menu" element={<MenuAdmin token={token} />} />
+        )}
         <Route path="*" element={<Navigate to="/menu" replace />} />
       </Routes>
     </Router>
