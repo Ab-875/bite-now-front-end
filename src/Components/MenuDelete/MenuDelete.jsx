@@ -1,21 +1,21 @@
 import React from 'react';
-import axios from 'axios';
-import {deleteItem} from '../..//lib/api'
+import { deleteItem } from '../../lib/api'
 
-const MenuDelete = ({ItemId,getAllItems}) => {
-    const handleDelete = async () => {
-            await deleteItem(ItemId)
-    }      
+const MenuDelete = ({ itemId, getAllItems }) => {
+const handleDelete = async () => {
+try {
+await deleteItem(itemId)
+await getAllItems()
+} catch (error) {
+console.error('Error deleting item:', error)
+}
 }
 
+return (
+<button onClick={handleDelete}>
+Delete
+</button>
+)
+}
 
-
-
-
-
-export default MenuDelete;
-import {useEffect, useState} from "react"
-import {ClipLoader} from "react-spinners"
-
-import MenuDeleteButton from "../MenuList/MenuDeleteButton"
-
+export default MenuDelete
