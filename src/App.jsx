@@ -17,12 +17,12 @@ const App = () => {
     setToken(newToken)
   }
 
-  const handleLogout = (token) => {
-    localStorage.setItem("token", token)
-    setToken(null)
-    setUser(null)
-    setCartItems([])
-  }
+  // const handleLogout = (token) => {
+  //   localStorage.setItem("token", token)
+  //   setToken(null)
+  //   setUser(null)
+  //   setCartItems([])
+  // }
 
   useEffect(() => {
     if (token) {
@@ -52,28 +52,14 @@ const App = () => {
     <>
       <Router>
         <LogoutButton onLogout={handleLogout} />
-        {user?.role === "customer"
-          ?
+
           <Routes>
-            <Route path="/menu"
+            {/* <Route path="/menu"
               element={<MenuList token={token} />}
               onAddToCart={(item) => { setCartItems([...cartItems, item]) }}
-            />
-            <Route path="*" element={<Navigate to="/menu" />} />
+            /> */}
+            <Route path="/order" element={<OrderList token={token} />} />
           </Routes>
-          :
-          null
-        }
-
-        {user?.role === "owner"
-          ?
-          <Routes>
-            <Route path="/orders" element={<OrderList token={token} />} />
-            <Route path="*" element={<Navigate to="/order" />} />
-          </Routes>
-          :
-          null
-        }
       </Router>
     </>
   )

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import OrderItem from "../OrderItem/OrderItem"
 
 
-const OrderList = () => {
+const OrderList = ({token}) => {
 
     const [orders, setOrders] = useState([])
 
