@@ -1,63 +1,52 @@
-import { jwtDecode } from "jwt-decode"
-import { useEffect, useState } from "react"
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router"
+import { useEffect, useState } from "react"
+import { jwtDecode } from "jwt-decode"
+import MenuList from "./components/MenuList/MenuList"
+import OrderList from "./components/OrderList/OrderList"
 import LoginForm from "./components/Login/LoginForm"
 import SignUp from "./components/Signup/SignupForm"
-import LogoutButton from "./components/Login/LogoutButton"
-import OrderList from "./components/OrderList/OrderList"
-import Cart from "./components/Cart/Cart"
 
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem('token'))
+  const [token, setToken] = useState(localStorage.getItem("token"))
   const [user, setUser] = useState(null)
-  const [cartItems, setCartItems] = useState([])
 
   function handleLogin(newToken) {
+    localStorage.setItem("token", newToken)
     setToken(newToken)
   }
 
-  const handleLogout = (token) => {
-    localStorage.setItem("token", token)
+  function handleLogout() {
+    localStorage.removeItem("token")
     setToken(null)
     setUser(null)
-    setCartItems([])
   }
 
   useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token)
-      setUser(decodedToken)
-      console.log(decodedToken)
-    } else {
-      setUser(null)
-    }
+    if (token) setUser(jwtDecode(token))
+    else setUser(null)
   }, [token])
-
-
 
   if (!token) {
     return (
-      <>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-            <Route path="/signup" element={<SignUp />} />
-          </Routes>
-        </Router>
-      </>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
     )
   }
 
   return (
-    <>
-      <Router>
-        <LogoutButton onLogout={handleLogout} />
-        <Routes>
-          <Route path="/order" element={<OrderList token={token} />} />
-        </Routes>
-      </Router>
-    </>
+    <Router>
+      <button onClick={handleLogout}>Logout</button>
+      <Routes>
+        <Route path="/menu" element={<MenuList token={token} />} />
+        <Route path="/order" element={<OrderList token={token} />} />
+        <Route path="*" element={<Navigate to="/menu" replace />} />
+      </Routes>
+    </Router>
   )
 }
 

@@ -1,74 +1,50 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import OrderItem from "./OrderItem"
-import OrderEdit from "./OrderEdit"
 
-const OrderList = ({ token }) => {
-    const [orders, setOrders] = useState([])
-    const [editing, setEditing] = useState(null)
-    const [loading, setLoading] = useState(true)
-
-    const fetchOrders = async () => {
-        setLoading(true)
-        try {
-            const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/order`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            setOrders(res.data)
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setLoading(false)
-        }
-    }
+const MenuList = ({ token, onOrderCreated }) => {
+    const [menus, setMenus] = useState([])
+    const [quantityById, setQuantityById] = useState({})
 
     useEffect(() => {
-        fetchOrders()
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/menu`)
+            .then(res => setMenus(res.data))
+            .catch(console.error)
     }, [])
 
-    const deleteOrder = async (id) => {
-        await axios.delete(
-            `${import.meta.env.VITE_BACKEND_URL}/order/${id}`,
+    const addToOrders = async (menu) => {
+        const qty = Math.max(1, Number(quantityById[menu._id] ?? 1))
+        const payload = {
+            items: [{ menuItem: menu._id, quantity: qty }],
+            price: menu.price * qty
+        }
+        const res = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/order`,
+            payload,
             { headers: { Authorization: `Bearer ${token}` } }
         )
-        setOrders(prev => prev.filter(o => o._id !== id))
-    }
-
-    const recalcPrice = (items) => {
-        return items.reduce((sum, it) => {
-            const price = Number(it.menuItem?.price || 0)
-            const qty = Number(it.quantity || 1)
-            return sum + price * qty
-        }, 0)
-    }
-
-    const saveOrder = async (updated) => {
-        const price = recalcPrice(updated.items)
-        const body = { items: updated.items, price }
-        const res = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/order/${updated._id}`,
-            body,
-            { headers: { Authorization: `Bearer ${token}` } }
-        )
-        setOrders(prev => prev.map(o => (o._id === updated._id ? res.data : o)))
-        setEditing(null)
+        if (onOrderCreated) onOrderCreated(res.data)
     }
 
     return (
         <div>
-            <h2>My Orders</h2>
-            {editing && <OrderEdit order={editing} onSave={saveOrder} onCancel={() => setEditing(null)} />}
-            {loading ? <p>Loading…</p> : (
-                <ul>
-                    {orders.map(o => (
-                        <OrderItem key={o._id} order={o} onEdit={setEditing} onDelete={deleteOrder} />
-                    ))}
-                    {!orders.length && <p>No orders yet.</p>}
-                </ul>
-            )}
+            <h2>Menu</h2>
+            <ul>
+                {menus.map((menu) => (
+                    <li key={menu._id}>
+                        <div>{menu.item} - {menu.price}</div>
+                        <div>{menu.description}</div>
+                        <input
+                            type="number"
+                            min={1}
+                            value={quantityById[menu._id] ?? 1}
+                            onChange={(e) => setQuantityById(s => ({ ...s, [menu._id]: e.target.value }))}
+                        />
+                        <button onClick={() => addToOrders(menu)}>Add to Orders</button>
+                    </li>
+                ))}
+            </ul>
         </div>
     )
 }
 
-export default OrderList
+export default MenuList
