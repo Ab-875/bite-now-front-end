@@ -1,3 +1,4 @@
+
 import { jwtDecode } from "jwt-decode"
 import { useEffect, useState } from "react"
 
@@ -7,6 +8,7 @@ import SignUp from "./components/Signup/SignupForm"
 import LogoutButton from "./components/Login/LogoutButton"
 import OrderList from "./components/OrderList/OrderList"
 import Cart from "./components/Cart/Cart"
+
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token'))
@@ -47,6 +49,7 @@ const App = () => {
 
   return (
     <>
+
       <Router>
         <LogoutButton onLogout={handleLogout} />
         {user?.role === "customer"
