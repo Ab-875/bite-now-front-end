@@ -53,3 +53,39 @@ li:hover {
 li p {
   margin: 10px 0;
 }
+input[type="number"] {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 12px;
+  width: 50px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #C13B41;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 18px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #B72D36;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:focus {
+  outline: none;
+}
