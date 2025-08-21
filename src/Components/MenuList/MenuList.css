@@ -54,3 +54,6 @@ button {
 button:hover {
   background-color: dark-red;
 }
+button:active {
+  background-color: dark-red;
+}
