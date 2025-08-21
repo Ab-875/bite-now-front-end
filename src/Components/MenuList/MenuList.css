@@ -40,13 +40,3 @@ input[type="password"] {
   width: 100%;
   box-sizing: border-box;
 }
-
-input[type="password"]:focus {
-  border-color: rgb(13, 21, 232); 
-  outline: none;
-}
-
-input[type="text"]:focus {
-  border-color: rgb(1, 222, 8); 
-  outline: none;
-}
