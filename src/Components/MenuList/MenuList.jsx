@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import './MenuList.css'
 
 const MenuList = ({ token, role }) => {
   const [menus, setMenus] = useState([])
@@ -37,7 +38,7 @@ const MenuList = ({ token, role }) => {
   return (
     <div>
       <h2>Menu Items</h2>
-      {role !== "customer" && <p>You must be logged in as a customer to place orders.</p>}
+      {/* {role !== "customer" && <p>You must be logged in as a customer to place orders.</p>} */}
       {error && <p>{error}</p>}
       <ul>
         {menus.length > 0 ? (

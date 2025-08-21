@@ -76,7 +76,7 @@ const OrderList = ({ token, role }) => {
                                 ) : (
                                     <span>{order.status}</span>
                                 )}{" "}
-                                — Total: {order.price}
+                                — Total: {order.price} $
                             </div>
                             <ul>
                                 {(order.items || []).map((item, index) => (
