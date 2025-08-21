@@ -14,6 +14,12 @@ body {
   align-items: center;
 }
 form {
-  background: #ffffff;
+  background: #ce0b0b;
   padding: 32px 40px;
+border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
