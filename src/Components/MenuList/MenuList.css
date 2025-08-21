@@ -57,3 +57,12 @@ button:hover {
 button:active {
   background-color: dark-red;
 }
+
+button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+button:focus {
+  outline: none;
+}
