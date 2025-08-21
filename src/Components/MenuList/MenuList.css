@@ -51,3 +51,6 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
+button:hover {
+  background-color: dark-red;
+}
