@@ -1,8 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,11 +36,13 @@ input[type="password"] {
   width: 100%;
   box-sizing: border-box;
 }
+
+
 button {
   margin-top: 20px;
   padding: 12px;
   background-color: red;
-  color: rgb(214, 150, 22);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 6px;
   font-size: 16px;
