@@ -14,12 +14,20 @@ body {
   align-items: center;
 }
 form {
-  background: #ce0b0b;
+  background: #ffffff;
   padding: 32px 40px;
-border-radius: 12px;
+  border-radius: 12px;
   width: 100%;
   max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+h2 {
+  color: red; 
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+  font-family:serif;
+}
+
