@@ -30,16 +30,7 @@ h2 {
   text-align: center;
   font-family:serif;
 }
-input[type="text"] {
-  padding: 12px;
-  border: 1px solid gray;
-  border-radius: 6px;
-  font-size: 16px;
-  margin-bottom: 16px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
+input[type="text"],
 input[type="password"] {
   padding: 12px;
   border: 1px solid gray;
@@ -49,4 +40,3 @@ input[type="password"] {
   width: 100%;
   box-sizing: border-box;
 }
-
